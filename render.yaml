@@ -1,20 +1,21 @@
-services:
-  # 1. Managed PostgreSQL
-  - type: database
-    name: notionxgmail-db
+databases:
+  - name: notionxgmail-db
     databaseName: notionxgmail
     user: admin
+    plan: free
 
-  # 2. Managed Redis (for BullMQ)
+services:
+  # 1. Managed Redis (for BullMQ)
   - type: redis
     name: notionxgmail-redis
-    plan: free # or starter
+    plan: free
     ipAllowList: [] # Only allow internal access
 
-  # 3. Backend API Service
+  # 2. Backend API Service
   - type: web
     name: notionxgmail-api
     runtime: node
+    plan: free
     buildCommand: npm install && npm run build
     startCommand: npm start
     envVars:
@@ -46,10 +47,11 @@ services:
       - key: JWT_SECRET
         generateValue: true
 
-  # 4. Frontend Dashboard (Static or Web Service)
+  # 3. Frontend Dashboard
   - type: web
     name: notionxgmail-dashboard
     runtime: node
+    plan: free
     rootDir: dashboard
     buildCommand: npm install && npm run build
     startCommand: npm start
