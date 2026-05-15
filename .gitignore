@@ -1,0 +1,12 @@
+node_modules
+.env
+data
+logs
+*.log
+.DS_Store
+dist
+build
+.next
+dashboard/node_modules
+dashboard/.next
+dashboard/build

@@ -1,0 +1,61 @@
+services:
+  # 1. Managed PostgreSQL
+  - type: database
+    name: notionxgmail-db
+    databaseName: notionxgmail
+    user: admin
+
+  # 2. Managed Redis (for BullMQ)
+  - type: redis
+    name: notionxgmail-redis
+    plan: free # or starter
+    ipAllowList: [] # Only allow internal access
+
+  # 3. Backend API Service
+  - type: web
+    name: notionxgmail-api
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: notionxgmail-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: notionxgmail-redis
+          property: connectionString
+      - key: NODE_ENV
+        value: production
+      - key: APP_ENCRYPTION_KEY
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REDIRECT_URI
+        sync: false
+      - key: NOTION_CLIENT_ID
+        sync: false
+      - key: NOTION_CLIENT_SECRET
+        sync: false
+      - key: NOTION_REDIRECT_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+
+  # 4. Frontend Dashboard (Static or Web Service)
+  - type: web
+    name: notionxgmail-dashboard
+    runtime: node
+    rootDir: dashboard
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: notionxgmail-api
+          property: host
