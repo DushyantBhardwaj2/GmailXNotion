@@ -4,11 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node -r tsconfig-paths/register src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsc && tsc-alias",
     "dev": "concurrently \"npm run dev:api\" \"npm run dev:dashboard\"",
     "dev:api": "nodemon --watch 'src/**/*.ts' --exec 'ts-node -r tsconfig-paths/register src/index.ts'",
     "dev:dashboard": "cd dashboard && npm run dev",
     "validate": "ts-node -r tsconfig-paths/register src/validate-schema.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
     "test:fallback": "ts-node -r tsconfig-paths/register src/test-fallback.ts",
     "test:e2e": "ts-node -r tsconfig-paths/register src/test-e2e.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -19,7 +22,6 @@
   "type": "commonjs",
   "dependencies": {
     "@notionhq/client": "^5.21.0",
-    "@types/pg": "^8.20.0",
     "better-sqlite3": "^12.10.0",
     "bullmq": "^5.76.8",
     "cookie-parser": "^1.4.7",
@@ -41,11 +43,14 @@
     "@types/better-sqlite3": "^7.6.13",
     "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.8.0",
+    "@types/pg": "^8.20.0",
     "@types/winston": "^2.4.4",
     "concurrently": "^9.2.1",
     "drizzle-kit": "^0.31.10",
     "nodemon": "^3.1.14",
+    "tsc-alias": "^1.8.17",
     "tsconfig-paths": "^4.2.0"
   }
 }

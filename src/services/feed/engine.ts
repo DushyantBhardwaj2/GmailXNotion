@@ -1,9 +1,7 @@
-import { EmailMetadata } from '@types/index';
-import { FeedConfiguration, FeedRule } from '@types/feed';
-import { notion } from '@services/notion/client';
-import { env } from '@config/env';
-import { withRetry, rateLimit } from '@utils/retry';
-import logger from '@utils/logger';
+import { EmailMetadata } from '../../types';
+import { FeedConfiguration, FeedRule } from '../../types/feed';
+import { withRetry, rateLimit } from '../../utils/retry';
+import logger from '../../utils/logger';
 
 export class FeedEngine {
   private activeFeeds: FeedConfiguration[] = [];
@@ -11,10 +9,10 @@ export class FeedEngine {
   private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
   /**
-   * Evaluates an email against all active feeds and returns the matching feed names.
+   * Evaluates an email against all active feeds for a specific workspace.
    */
-  async evaluate(email: EmailMetadata): Promise<string[]> {
-    await this.ensureFeedsLoaded();
+  async evaluate(email: EmailMetadata, notion: any, feedsDbId: string): Promise<string[]> {
+    await this.ensureFeedsLoaded(notion, feedsDbId);
     const matches: string[] = [];
 
     for (const feed of this.activeFeeds) {
@@ -65,7 +63,7 @@ export class FeedEngine {
     return true;
   }
 
-  private async ensureFeedsLoaded() {
+  private async ensureFeedsLoaded(notion: any, feedsDbId: string) {
     if (Date.now() - this.lastFetch < this.CACHE_TTL && this.activeFeeds.length > 0) {
       return;
     }
@@ -74,10 +72,10 @@ export class FeedEngine {
       const response = await withRetry(() =>
         rateLimit(() =>
           notion.databases.query({
-            database_id: env.NOTION_FEEDS_DB_ID,
+            database_id: feedsDbId,
           })
         )
-      );
+      ) as any;
 
       this.activeFeeds = response.results.map((page: any) => {
         const props = page.properties;

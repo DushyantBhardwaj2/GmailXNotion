@@ -1,6 +1,8 @@
 import { GmailClient } from './client';
 import { AccountsService } from '@services/notion/accounts';
 import { EmailsService } from '@services/notion/emails';
+import { db, schema } from '../../db';
+import { eq } from 'drizzle-orm';
 import logger from '@utils/logger';
 import { logSyncFailure } from '@utils/failure-logger';
 
@@ -110,6 +112,12 @@ export class SyncEngine {
     // Dynamic import to avoid circular dependencies
     const { feedEngine } = await import('@services/feed/engine');
     
+    // Fetch workspace metadata for feed engine
+    const workspace = await db.query.notionWorkspaces.findFirst({
+      where: eq(schema.notionWorkspaces.id, this.workspaceId),
+      columns: { feedsDbId: true }
+    });
+    
     let successCount = 0;
     let failureCount = 0;
 
@@ -118,10 +126,12 @@ export class SyncEngine {
         const message = await client.getMessage(id);
         const metadata = await client.getMetadata(message);
         
-        // For feed tags, we'd need a multi-tenant feed engine too.
-        // As a simplification for MVP, feed tags are empty array unless feedEngine is context-aware.
-        // Assuming feedEngine is updated separately or just returns [] for now.
-        const feedTags: string[] = []; // await feedEngine.evaluate(metadata);
+        const feedTags: string[] = [];
+        if (workspace?.feedsDbId) {
+          const notionClient = (this.emailsService as any).notion;
+          const tags = await feedEngine.evaluate(metadata, notionClient, workspace.feedsDbId);
+          feedTags.push(...tags);
+        }
         
         await this.emailsService.upsertEmail(metadata, feedTags);
         successCount++;

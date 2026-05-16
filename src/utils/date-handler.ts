@@ -1,12 +1,12 @@
 import { format, parseISO } from 'date-fns';
-import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
+import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 
 /**
  * Normalizes a date to UTC from a specific timezone
  */
 export function normalizeToUtc(date: Date | string, timezone: string): Date {
   const d = typeof date === 'string' ? parseISO(date) : date;
-  return zonedTimeToUtc(d, timezone);
+  return fromZonedTime(d, timezone);
 }
 
 /**

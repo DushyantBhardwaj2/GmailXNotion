@@ -55,7 +55,7 @@ export default function RootLayout({
             display: 'flex',
             justifyContent: 'space-between'
           }}>
-            <span>SYSTEM_TIME: {new Date().toISOString()}</span>
+            <span>SYSTEM_TIME: [ONLINE]</span>
             <span>CORE_SYNC_ACTIVE: TRUE</span>
           </footer>
         </main>

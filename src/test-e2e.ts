@@ -76,7 +76,7 @@ async function runE2E() {
     // Get the user's email
     const userRow = originalPrepare('SELECT email FROM users WHERE id = ?').get(capturedUserId) as any;
     
-    const syncEngine = new SyncEngine(capturedUserId, capturedWorkspaceId);
+    const syncEngine = await SyncEngine.create(capturedUserId, capturedWorkspaceId);
     try {
       await syncEngine.syncAccount(userRow.email);
       console.log('✅ Sync completed successfully!');

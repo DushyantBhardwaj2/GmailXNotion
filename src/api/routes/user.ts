@@ -53,7 +53,7 @@ router.get('/status', authenticate, async (req: any, res) => {
         icon: workspace.workspaceIcon,
         isProvisioned: !!workspace.emailsDbId,
       } : null,
-      syncs: syncStates.map(s => ({
+      syncs: syncStates.map((s: any) => ({
         email: s.email,
         lastProcessedMessageId: s.lastProcessedMessageId,
       })),
