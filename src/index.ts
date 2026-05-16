@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import { env } from '@config/env';
 import apiRoutes from '@api/index';
@@ -15,7 +15,7 @@ app.use(cookieParser());
 // API Routes
 app.use('/api', apiRoutes);
 
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
   res.send('Opportunity Mail Tracker API is running.');
 });
 

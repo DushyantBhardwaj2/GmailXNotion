@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { gmailAuthService } from '../../services/gmail/auth';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
@@ -13,14 +13,14 @@ const router = Router();
 // ==================================
 
 // 1. Initiate Google OAuth
-router.get('/google', (req, res) => {
+router.get('/google', (req: Request, res: Response) => {
   const state = crypto.randomUUID(); // For CSRF
   const url = gmailAuthService.generateAuthUrl(state);
   res.redirect(url);
 });
 
 // 2. Google OAuth Callback
-router.get('/google/callback', async (req, res) => {
+router.get('/google/callback', async (req: Request, res: Response) => {
   try {
     const code = req.query.code as string;
     if (!code) {
@@ -66,8 +66,8 @@ router.get('/google/callback', async (req, res) => {
 // Notion OAuth Routes
 // ==================================
 
-router.get('/notion', (req, res) => {
-  const state = req.query.userId || req.cookies?.auth_token; 
+router.get('/notion', (req: Request, res: Response) => {
+  const state = (req.query.userId as string) || req.cookies?.auth_token; 
   if (!state) {
     return res.status(401).send('Must be logged in to connect Notion');
   }
@@ -76,7 +76,7 @@ router.get('/notion', (req, res) => {
   res.redirect(notionAuthUrl);
 });
 
-router.get('/notion/callback', async (req, res) => {
+router.get('/notion/callback', async (req: Request, res: Response) => {
   try {
     const code = req.query.code as string;
     const state = req.query.state as string;

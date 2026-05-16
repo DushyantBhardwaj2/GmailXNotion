@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { syncQueue } from '@services/queue';
 import { db, schema } from '../../db';
 import logger from '@utils/logger';
@@ -10,7 +10,7 @@ const router = Router();
  * Google Cloud Pub/Sub Push Webhook
  * Body contains base64 encoded Gmail notification
  */
-router.post('/gmail', async (req, res) => {
+router.post('/gmail', async (req: Request, res: Response) => {
   try {
     const { message } = req.body;
     if (!message || !message.data) {

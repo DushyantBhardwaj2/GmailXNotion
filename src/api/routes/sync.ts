@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { db, schema } from '../../db';
 import { syncQueue } from '@services/queue';
 import logger from '@utils/logger';
@@ -6,7 +6,7 @@ import { eq } from 'drizzle-orm';
 
 const router = Router();
 
-router.post('/', async (req, res) => {
+router.post('/', async (req: Request, res: Response) => {
   const { email } = req.body;
 
   try {
